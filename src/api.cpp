@@ -21,6 +21,8 @@ static void StartDemoCarlaclient(afb_api_t api);
 static const char GpsEventName[] = "gps/setlocation";
 static const char CarlaEventName[] = "carlaclient/positionUpdated";
 
+static bool demoflag = false;
+
 /**
  *  Variable declaration
  */
@@ -599,18 +601,22 @@ void sendevent(){
 	int len = sizeof(latitude)/sizeof(char*);
 		printf("Naviservice: len====== %d \n",len);
 	for (int i=0;i<len;i++){
-		struct json_object* obj = json_object_new_object();
-		const char * lat = latitude[i];
-		const char * lon = longitude[i];
-		const char * speed = carspeed;
-		json_object_object_add(obj, "latitude", json_object_new_string(lat));
-		json_object_object_add(obj, "longitude", json_object_new_string(lon));
-		json_object_object_add(obj, "carSpeed", json_object_new_string(speed));
-		printf("lat %s lon %s speed %s \n",lat,lon,speed);
-		// AFB_API_NOTICE(api, "Get gps date.Latitude %s Longitude %s", lat, lon);
-		afb_event_push(gps_event, obj);
-		// sleep(1);
-		usleep(300*1000);
+		if (demoflag == true){
+			struct json_object* obj = json_object_new_object();
+			const char * lat = latitude[i];
+			const char * lon = longitude[i];
+			const char * speed = carspeed;
+			json_object_object_add(obj, "latitude", json_object_new_string(lat));
+			json_object_object_add(obj, "longitude", json_object_new_string(lon));
+			json_object_object_add(obj, "carSpeed", json_object_new_string(speed));
+			printf("lat %s lon %s speed %s \n",lat,lon,speed);
+			// AFB_API_NOTICE(api, "Get gps date.Latitude %s Longitude %s", lat, lon);
+			afb_event_push(gps_event, obj);
+			// sleep(1);
+			usleep(300*1000);
+		} else {
+			break;
+		}
 	}
 }
 /**
@@ -677,8 +683,22 @@ void OnRequestNavicoreSetDestDir(afb_req_t req)
 void OnRequestNavicoreStartGuidance(afb_req_t req)
 {
 	AFB_REQ_NOTICE(req, "OnRequestNavicoreStartGuidance");
+	demoflag = true;
 	// StartDemoCarlaclient(req->api);
 	sendevent();
+	afb_req_success(req, NULL, NULL);
+}
+
+/**
+ *  @brief navicore_cancelguidance request callback
+ *  @param[in] req Request from server
+ */
+void OnRequestNavicoreCancelGuidance(afb_req_t req)
+{
+	AFB_REQ_NOTICE(req, "OnRequestNavicoreCancelGuidance");
+	demoflag = false;
+	// StopDemoCarlaclient(req->api);
+
 	afb_req_success(req, NULL, NULL);
 }
 
@@ -1000,6 +1020,7 @@ const afb_verb_t verbs[] =
 	 { verb : "navicore_arrivedest",		   	callback : OnRequestNavicoreArriveDest	 },
 	 { verb : "navicore_setdestdir",            callback : OnRequestNavicoreSetDestDir	 },
 	 { verb : "navicore_startguidance",         callback : OnRequestNavicoreStartGuidance	},
+	 { verb : "navicore_cancelguidance",        callback : OnRequestNavicoreCancelGuidance	},
 	 { verb : "subscribe",		   				callback : subscribe 						},
 	 { verb : "unsubscribe",		   			callback : unsubscribe						},
 	 { verb : NULL }
