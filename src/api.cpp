@@ -39,6 +39,7 @@ static afb_event_t adddest_event;
 static afb_event_t gps_event;
 static afb_event_t getdestdir_event;
 static afb_event_t heading_event;
+static afb_event_t cancelguidance_event;
 void sendevent();
 /**
  *  @brief navicore_getposition request callback
@@ -664,6 +665,8 @@ void OnRequestNavicoreSetDestDir(afb_req_t req)
 
 	afb_req_success(req, NULL, NULL);
 
+	navigationInfo->setNaviInfoCurrentDirState(const_cast<char*>(state));
+
 	struct json_object* response_json = json_object_new_object();
 
 	AFB_REQ_NOTICE(req, "OnRequestNavicoreSetDestDir");
@@ -675,7 +678,28 @@ void OnRequestNavicoreSetDestDir(afb_req_t req)
 
 	afb_event_push(getdestdir_event, response_json);
 }
+/**
+ *  @brief navicore_getcurrentdestdir request callback
+ *  @param[in] req Request from server
+ */
+void OnRequestNavicoreGetCurrentDestDir(afb_req_t req)
+{
+	struct json_object* response_json = json_object_new_array();
+    struct json_object* obj = json_object_new_object();
 
+	char* current_dirstate  = navigationInfo->getNaviInfoCurrentDirState();
+
+	json_object_object_add(obj, "CurrentDirState", json_object_new_string(current_dirstate));
+
+	json_object_array_add(response_json, obj);
+	const char* obj_str = json_object_to_json_string(obj);
+	AFB_API_NOTICE(req->api, "obj_str = %s", obj_str);
+
+	// Return success to BinderClient
+	afb_req_success(req, response_json, "navicore_getcurrentdestdir");
+
+	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+}
 /**
  *  @brief navicore_startguidance request callback
  *  @param[in] req Request from server
@@ -698,7 +722,7 @@ void OnRequestNavicoreCancelGuidance(afb_req_t req)
 	AFB_REQ_NOTICE(req, "OnRequestNavicoreCancelGuidance");
 	demoflag = false;
 	// StopDemoCarlaclient(req->api);
-
+	afb_event_push(cancelguidance_event, NULL);
 	afb_req_success(req, NULL, NULL);
 }
 
@@ -756,6 +780,11 @@ void subscribe(afb_req_t req)
 		afb_req_success(req, NULL, NULL);
 		return;
 	}
+	else if(value && !strcasecmp(value, "cancelguidance")){
+		afb_req_subscribe(req, cancelguidance_event);
+		afb_req_success(req, NULL, NULL);
+		return;
+	}
 	afb_req_fail(req, "failed", "Invalid event");
 }
 
@@ -810,6 +839,11 @@ void unsubscribe(afb_req_t req)
 	}
 	else if(value && !strcasecmp(value, "getdestdir")){
 		afb_req_unsubscribe(req, getdestdir_event);
+		afb_req_success(req, NULL, NULL);
+		return;
+	}
+	else if(value && !strcasecmp(value, "cancelguidance")){
+		afb_req_unsubscribe(req, cancelguidance_event);
 		afb_req_success(req, NULL, NULL);
 		return;
 	}
@@ -988,7 +1022,7 @@ int init(afb_api_t api)
 	gps_event = afb_api_make_event(afbBindingV3root,"navicore_gps");
 	heading_event = afb_api_make_event(afbBindingV3root,"navicore_heading");
 	getdestdir_event = afb_api_make_event(afbBindingV3root,"navicore_getdestdir");
-
+	cancelguidance_event = afb_api_make_event(afbBindingV3root,"navicore_cancelguidance");
 	// SubscribeGps(api);
 	// SubscribeCarlaclient(api);
 	
@@ -1019,6 +1053,7 @@ const afb_verb_t verbs[] =
 	 { verb : "navicore_stopdemo",		   		callback : OnRequestNavicoreStopDemo	 },
 	 { verb : "navicore_arrivedest",		   	callback : OnRequestNavicoreArriveDest	 },
 	 { verb : "navicore_setdestdir",            callback : OnRequestNavicoreSetDestDir	 },
+	 { verb : "navicore_getcurrentdestdir",	    callback : OnRequestNavicoreGetCurrentDestDir },
 	 { verb : "navicore_startguidance",         callback : OnRequestNavicoreStartGuidance	},
 	 { verb : "navicore_cancelguidance",        callback : OnRequestNavicoreCancelGuidance	},
 	 { verb : "subscribe",		   				callback : subscribe 						},

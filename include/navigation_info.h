@@ -25,6 +25,9 @@ private:
 	/*	getAllroutes	*/
 	uint32_t mRoutes;				//current route count
 
+	/* GetDirState */
+	char mCurrentState[256];		//current direction state info
+
 	/*	getdestination	*/
 	char mDestLatitude[256];		//Destination latitude info
 	char mDestLongitude[256];		//Destination longitude info
@@ -51,6 +54,9 @@ public:
 
 	void setNaviInfoCurrentHeading( char* heading );
 	char* getNaviInfoCurrentHeading();
+
+	void setNaviInfoCurrentDirState( char* state );
+	char* getNaviInfoCurrentDirState();
 
 	void setNaviInfoAllRoutes( char* route );
 	uint32_t getNaviInfoAllRoutes();

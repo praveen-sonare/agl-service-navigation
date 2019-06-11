@@ -55,6 +55,16 @@ char* NavigationInfo::getNaviInfoCurrentHeading()
 	return mCurrentHeading;
 }
 
+void NavigationInfo::setNaviInfoCurrentDirState( char* state )
+{
+	strcpy(mCurrentState,state);
+}
+
+char* NavigationInfo::getNaviInfoCurrentDirState()
+{
+	return mCurrentState;
+}
+
 void NavigationInfo::setNaviInfoAllRoutes( char* route )
 {
 	mRoutes = stoi(route);
