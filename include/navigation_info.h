@@ -22,11 +22,11 @@ private:
 	char mCurrentLongitude[256];	//current longitude info
 	char mCurrentHeading[256];	     //current heading info
 
-	/*	getAllroutes	*/
-	uint32_t mRoutes;				//current route count
-
 	/* GetDirState */
 	char mCurrentState[256];		//current direction state info
+
+	/*	getAllroutes	*/
+	uint32_t mRoutes;				//current route count
 
 	/*	getdestination	*/
 	char mDestLatitude[256];		//Destination latitude info
