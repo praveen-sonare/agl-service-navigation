@@ -47,13 +47,13 @@ static afb_event_t cancelguidance_event;
  */
 void OnRequestNavicoreGetPosition(afb_req_t req)
 {
-	AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
+	//AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_getposition");
 
 	// Request of Json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
-	AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
+	//AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
 
 	// Request analysis and create arguments to pass to Genivi
 	std::vector< int32_t > Params;
@@ -77,7 +77,7 @@ void OnRequestNavicoreGetPosition(afb_req_t req)
 	// On success
 	if(response.isSuccess)
 	{
-		AFB_API_NOTICE(req->api, "res_json_str = %s", json_object_to_json_string(response.json_data));
+		//AFB_API_NOTICE(req->api, "res_json_str = %s", json_object_to_json_string(response.json_data));
 		// Return success to BinderClient
 		afb_req_success(req, response.json_data, "navicore_getposition");
 	}
@@ -90,7 +90,7 @@ void OnRequestNavicoreGetPosition(afb_req_t req)
 	// Json object release
 	json_object_put(response.json_data);
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 
@@ -100,11 +100,11 @@ void OnRequestNavicoreGetPosition(afb_req_t req)
  */
 void OnRequestNavicoreGetAllRoutes(afb_req_t req)
 {
-	AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
+	//AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_getallroutes");
 
 	// No request information in json format
-	AFB_API_NOTICE(req->api, "req_json_str = none");
+	//AFB_API_NOTICE(req->api, "req_json_str = none");
 
 #if 0
 	// GENEVI API call
@@ -120,7 +120,7 @@ void OnRequestNavicoreGetAllRoutes(afb_req_t req)
 	// On success
 	if(response.isSuccess)
 	{
-		AFB_API_NOTICE(req->api, "res_json_str = %s", json_object_to_json_string(response.json_data));
+		//AFB_API_NOTICE(req->api, "res_json_str = %s", json_object_to_json_string(response.json_data));
 		// Return success to BinderClient
 		afb_req_success(req, response.json_data, "navicore_getallroutes");
 	}
@@ -133,7 +133,7 @@ void OnRequestNavicoreGetAllRoutes(afb_req_t req)
 	// json object release
 	json_object_put(response.json_data);
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 
@@ -143,13 +143,13 @@ void OnRequestNavicoreGetAllRoutes(afb_req_t req)
  */
 void OnRequestNavicoreCreateRoute(afb_req_t req)
 {
-	AFB_API_NOTICE(req->api, "--> Start %s ", __func__);
+	//AFB_API_NOTICE(req->api, "--> Start %s ", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_createroute");
 
 	// Request of json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
-	AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
+	//AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
 
 	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
@@ -172,7 +172,7 @@ void OnRequestNavicoreCreateRoute(afb_req_t req)
 	// On success
 	if(response.isSuccess)
 	{
-		AFB_API_NOTICE(req->api, "res_json_str = %s", json_object_to_json_string(response.json_data));
+		//AFB_API_NOTICE(req->api, "res_json_str = %s", json_object_to_json_string(response.json_data));
 		// Return success to BinderClient
 		afb_req_success(req, response.json_data, "navicore_createroute");
 	}
@@ -185,7 +185,7 @@ void OnRequestNavicoreCreateRoute(afb_req_t req)
 	// json object release
 	json_object_put(response.json_data);
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 
@@ -195,13 +195,13 @@ void OnRequestNavicoreCreateRoute(afb_req_t req)
  */
 void OnRequestNavicorePauseSimulation(afb_req_t req)
 {
-	AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
+	//AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_pausesimulation");
 
 	// Request of json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
-	AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
+	//AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
 
 	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
@@ -219,12 +219,12 @@ void OnRequestNavicorePauseSimulation(afb_req_t req)
 #endif
 
 	// No reply unnecessary API for conversion to json format response is unnecessary
-	AFB_API_NOTICE(req->api, "res_json_str = none");
+	//AFB_API_NOTICE(req->api, "res_json_str = none");
 
 	// Return success to BinderClient
 	afb_req_success(req, NULL, "navicore_pausesimulation");
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 
@@ -234,13 +234,13 @@ void OnRequestNavicorePauseSimulation(afb_req_t req)
  */
 void OnRequestNavicoreSetSimulationMode(afb_req_t req)
 {
-	AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
+	//AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_setsimulationmode");
 
 	// Request of json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
-	AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
+	//AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
 
 	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
@@ -257,12 +257,12 @@ void OnRequestNavicoreSetSimulationMode(afb_req_t req)
 #endif
 
 	// No reply unnecessary API for conversion to json format response is unnecessary
-	AFB_API_NOTICE(req->api, "res_json_str = none");
+	//AFB_API_NOTICE(req->api, "res_json_str = none");
 
 	// Return success to BinderClient
 	afb_req_success(req, NULL, "navicore_setsimulationmode");
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 
@@ -272,13 +272,13 @@ void OnRequestNavicoreSetSimulationMode(afb_req_t req)
  */
 void OnRequestNavicoreCancelRouteCalculation(afb_req_t req)
 {
-	AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
+	//AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_cancelroutecalculation");
 
 	// Request of Json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
-	AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
+	//AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
 
 	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
@@ -295,12 +295,12 @@ void OnRequestNavicoreCancelRouteCalculation(afb_req_t req)
 #endif
 
 	// No reply unnecessary API for conversion to json format response is unnecessary
-	AFB_API_NOTICE(req->api, "res_json_str = none");
+	//AFB_API_NOTICE(req->api, "res_json_str = none");
 
 	// Return success to BinderClient
 	afb_req_success(req, NULL, "navicore_cancelroutecalculation");
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 
@@ -310,13 +310,13 @@ void OnRequestNavicoreCancelRouteCalculation(afb_req_t req)
  */
 void OnRequestNavicoreWaypoints(afb_req_t req)
 {
-	AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
+	//AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_setwaypoints");
 
 	// Request of Json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
-	AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
+	//AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
 
 	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
@@ -368,16 +368,16 @@ void OnRequestNavicoreWaypoints(afb_req_t req)
 	json_object_array_add(response_json, obj);
 
 	const char* response_json_str = json_object_to_json_string(response_json);
-	AFB_API_NOTICE(req->api, "response_json_str = %s", response_json_str);
+	//AFB_API_NOTICE(req->api, "response_json_str = %s", response_json_str);
 	afb_event_push(setwaypoints_event, response_json);
 #endif
 	// No reply unnecessary API for conversion to json format response is unnecessary
-	AFB_API_NOTICE(req->api, "res_json_str = none");
+	//AFB_API_NOTICE(req->api, "res_json_str = none");
 
 	// Return success to BinderClient
 	afb_req_success(req, NULL, "navicore_setwaypoints");
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 
@@ -387,13 +387,13 @@ void OnRequestNavicoreWaypoints(afb_req_t req)
  */
 void OnRequestNavicoreCalculateRoute(afb_req_t req)
 {
-	AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
+	//AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_calculateroute");
 
 	// Request of Json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
-	AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
+	//AFB_API_NOTICE(req->api, "req_json_str = %s", req_json_str);
 
 	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
@@ -410,12 +410,12 @@ void OnRequestNavicoreCalculateRoute(afb_req_t req)
 #endif
 
 	// No reply unnecessary API for conversion to json format response is unnecessary
-	AFB_API_NOTICE(req->api, "res_json_str = none");
+	//AFB_API_NOTICE(req->api, "res_json_str = none");
 
 	// Return success to BinderClient
 	afb_req_success(req, NULL, "navicore_calculateroute");
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 
@@ -425,11 +425,11 @@ void OnRequestNavicoreCalculateRoute(afb_req_t req)
  */
 void OnRequestNavicoreGetAllSessions(afb_req_t req)
 {
-	AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
+	//AFB_API_NOTICE(req->api, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_getallsessions");
 
 	// No request information in Json format
-	AFB_API_NOTICE(req->api, "req_json_str = none");
+	//AFB_API_NOTICE(req->api, "req_json_str = none");
 
 #if 0
 	// GENEVI API call
@@ -444,7 +444,7 @@ void OnRequestNavicoreGetAllSessions(afb_req_t req)
 	// On success
 	if(response.isSuccess)
 	{
-		AFB_API_NOTICE(req->api, "res_json_str = %s", json_object_to_json_string(response.json_data));
+		//AFB_API_NOTICE(req->api, "res_json_str = %s", json_object_to_json_string(response.json_data));
 		// Return success to BinderClient
 		afb_req_success(req, response.json_data, "navicore_getallsessions");
 	}
@@ -457,7 +457,7 @@ void OnRequestNavicoreGetAllSessions(afb_req_t req)
 	// json object release
 	json_object_put(response.json_data);
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 /**
@@ -494,12 +494,12 @@ void OnRequestNavicoreGetCurrentPos(afb_req_t req)
 
 	json_object_array_add(response_json, obj);
 	const char* obj_str = json_object_to_json_string(obj);
-	AFB_API_NOTICE(req->api, "obj_str = %s", obj_str);
+	//AFB_API_NOTICE(req->api, "obj_str = %s", obj_str);
 
 	// Return success to BinderClient
 	afb_req_success(req, response_json, "navicore_getcurrentpos");
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 /**
@@ -547,7 +547,7 @@ void OnRequestNavicoreSetDestPos(afb_req_t req)
 	struct json_object* response_json = json_object_new_array();
 	struct json_object* obj = json_object_new_object();
 
-	AFB_API_NOTICE(req->api, "OnRequestNavicoreSetDestPos");
+	//AFB_API_NOTICE(req->api, "OnRequestNavicoreSetDestPos");
 
 	uint32_t allroutes = navigationInfo->getNaviInfoAllRoutes();
 	json_object_object_add(obj, "AllRoutes", json_object_new_int(allroutes));
@@ -665,12 +665,12 @@ void OnRequestNavicoreGetCurrentDestDir(afb_req_t req)
 
 	json_object_array_add(response_json, obj);
 	const char* obj_str = json_object_to_json_string(obj);
-	AFB_API_NOTICE(req->api, "obj_str = %s", obj_str);
+	//AFB_API_NOTICE(req->api, "obj_str = %s", obj_str);
 
 	// Return success to BinderClient
 	afb_req_success(req, response_json, "navicore_getcurrentdestdir");
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 /**
  *  @brief navicore_startguidance request callback
@@ -727,7 +727,7 @@ void subscribe(afb_req_t req)
 	const char *value = afb_req_value(req, "value");
 
 	if (value && !strcasecmp(value, "setwaypoints")) {
-		AFB_API_NOTICE(req->api, "afb_req_subscribe");
+		//AFB_API_NOTICE(req->api, "afb_req_subscribe");
 		afb_req_subscribe(req, setwaypoints_event);
 		afb_req_success(req, NULL, NULL);
 		return;
@@ -851,7 +851,7 @@ void OnRequestNavicoreGetRouteInfo(afb_req_t req)
 	struct json_object* response_json = json_object_new_array();
 	struct json_object* obj = json_object_new_object();
 
-	AFB_API_NOTICE(req->api, "OnRequestNavicoreGetRouteInfo");
+	//AFB_API_NOTICE(req->api, "OnRequestNavicoreGetRouteInfo");
 
 	uint32_t allroutes = navigationInfo->getNaviInfoAllRoutes();
 	json_object_object_add(obj, "AllRoutes", json_object_new_int(allroutes));
@@ -871,15 +871,15 @@ void OnRequestNavicoreGetRouteInfo(afb_req_t req)
 
 	// No reply unnecessary API for conversion to json format response is unnecessary
 	const char* response_json_str = json_object_to_json_string(response_json);
-	AFB_API_NOTICE(req->api, "response_json_str = %s", response_json_str);
+	//AFB_API_NOTICE(req->api, "response_json_str = %s", response_json_str);
 
 	// No reply unnecessary API for conversion to json format response is unnecessary
-	AFB_API_NOTICE(req->api, "res_json_str = none");
+	//AFB_API_NOTICE(req->api, "res_json_str = none");
 
 	// Return success to BinderClient
 	afb_req_success(req, response_json, "navicore_getrouteinfo");
 
-	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 /**
@@ -890,7 +890,7 @@ void OnRequestNavicoreGetRouteInfo(afb_req_t req)
  */
 static void onevent(afb_api_t api, const char *event, struct json_object *object)
 {
-	AFB_API_NOTICE(api, "on_event %s , object %s", event, json_object_get_string(object));
+	//AFB_API_NOTICE(api, "on_event %s , object %s", event, json_object_get_string(object));
 
 	if (demo == false){
 		if (strcmp(event,GpsEventName) == 0)
@@ -911,7 +911,7 @@ static void onevent(afb_api_t api, const char *event, struct json_object *object
 				json_object_object_add(gps_obj, "latitude", json_object_new_string(latitude));
 				json_object_object_add(gps_obj, "longitude", json_object_new_string(longitude));
 
-				AFB_API_NOTICE(api, "event name %s , gps_obj %s", event, json_object_get_string(gps_obj));
+				//AFB_API_NOTICE(api, "event name %s , gps_obj %s", event, json_object_get_string(gps_obj));
 
 				afb_event_push(gps_event, gps_obj);
 			}
@@ -929,7 +929,7 @@ static void onevent(afb_api_t api, const char *event, struct json_object *object
 
 				json_object_object_add(heading_obj, "heading", json_object_new_string(heading));
 
-				AFB_API_NOTICE(api, "event name %s , heading_obj %s", event, json_object_get_string(heading_obj));
+				//AFB_API_NOTICE(api, "event name %s , heading_obj %s", event, json_object_get_string(heading_obj));
 
 				afb_event_push(heading_event, heading_obj);
 			}
@@ -950,7 +950,7 @@ static void onevent(afb_api_t api, const char *event, struct json_object *object
  */
 static void api_callback(void *closure, struct json_object *object, const char *error, const char *info, afb_api_t api)
 {
-	AFB_API_NOTICE(api, "asynchronous call, error=%s, info=%s, object=%s.", error, info, json_object_get_string(object));	
+	//AFB_API_NOTICE(api, "asynchronous call, error=%s, info=%s, object=%s.", error, info, json_object_get_string(object));	
 }
 
 /**
@@ -962,7 +962,7 @@ static void api_callback(void *closure, struct json_object *object, const char *
  */
 static void api_call(afb_api_t api, const char *service, const char *verb, struct json_object *args)
 {    
-	AFB_API_NOTICE(api, "service=%s verb=%s, args=%s.", service, verb, json_object_get_string(args));
+	//AFB_API_NOTICE(api, "service=%s verb=%s, args=%s.", service, verb, json_object_get_string(args));
 	afb_api_call(api, service, verb, args, api_callback, nullptr);
 }
 
@@ -975,7 +975,7 @@ static void StartDemoCarlaclient(afb_api_t api)
 	struct json_object* obj = json_object_new_object();
 	json_object_object_add(obj, "demo", json_object_new_string("true"));
 	api_call(api, "carlaclient", "demo" ,obj);
-	AFB_API_NOTICE(api, "StartDemoCarlaclient.");
+	//AFB_API_NOTICE(api, "StartDemoCarlaclient.");
 }
 
 /**
@@ -987,7 +987,7 @@ static void StopDemoCarlaclient(afb_api_t api)
 	struct json_object* obj = json_object_new_object();
 	json_object_object_add(obj, "demo", json_object_new_string("false"));
 	api_call(api, "carlaclient", "demo" ,obj);
-	AFB_API_NOTICE(api, "StopDemoCarlaclient.");
+	//AFB_API_NOTICE(api, "StopDemoCarlaclient.");
 }
 
 /**
