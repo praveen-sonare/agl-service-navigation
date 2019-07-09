@@ -40,6 +40,7 @@ static afb_event_t gps_event;
 static afb_event_t getdestdir_event;
 static afb_event_t heading_event;
 static afb_event_t cancelguidance_event;
+static afb_event_t startguidance_event;
 static afb_event_t guidancestartpos_event;
 static afb_event_t getdistance_event;
 
@@ -749,8 +750,10 @@ void OnRequestNavicoreStartGuidance(afb_req_t req)
 	AFB_REQ_NOTICE(req, "OnRequestNavicoreStartGuidance");
 	StartDemoCarlaclient(req->api);
 
-	const char* state = "ture";
+	const char* state = "true";
 	navigationInfo->setNaviInfoCurrentGuidanceState(const_cast<char*>(state));
+
+	afb_event_push(startguidance_event, NULL);
 
 	afb_req_success(req, NULL, NULL);
 }
@@ -920,6 +923,11 @@ void subscribe(afb_req_t req)
 		afb_req_success(req, NULL, NULL);
 		return;
 	}
+	else if(value && !strcasecmp(value, "startguidance")){
+		afb_req_subscribe(req, startguidance_event);
+		afb_req_success(req, NULL, NULL);
+		return;
+	}
 	else if(value && !strcasecmp(value, "setguidancestartpos")){
 		afb_req_subscribe(req, guidancestartpos_event);
 		afb_req_success(req, NULL, NULL);
@@ -989,6 +997,11 @@ void unsubscribe(afb_req_t req)
 	}
 	else if(value && !strcasecmp(value, "cancelguidance")){
 		afb_req_unsubscribe(req, cancelguidance_event);
+		afb_req_success(req, NULL, NULL);
+		return;
+	}
+	else if(value && !strcasecmp(value, "startguidance")){
+		afb_req_unsubscribe(req, startguidance_event);
 		afb_req_success(req, NULL, NULL);
 		return;
 	}
@@ -1201,6 +1214,7 @@ int init(afb_api_t api)
 	heading_event = afb_api_make_event(afbBindingV3root,"navicore_heading");
 	getdestdir_event = afb_api_make_event(afbBindingV3root,"navicore_getdestdir");
     cancelguidance_event = afb_api_make_event(afbBindingV3root,"navicore_cancelguidance");
+	startguidance_event = afb_api_make_event(afbBindingV3root,"navicore_startguidance");
 	guidancestartpos_event = afb_api_make_event(afbBindingV3root, "navicore_setguidancestartpos");
 	getdistance_event = afb_api_make_event(afbBindingV3root,"navicore_getdistance");
 
