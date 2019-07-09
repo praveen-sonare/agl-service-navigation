@@ -156,7 +156,7 @@ APIResponse BinderReply::ReplyNavicoreGetAllSessions( std::map<uint32_t, std::st
 		}
 		else
 		{
-			fprintf(stderr, "invalid key.");
+			fprintf(stderr, "invalid key. \n");
 			json_object_put(obj);
 		}
 	}

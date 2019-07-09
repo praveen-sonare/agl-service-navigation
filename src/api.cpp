@@ -40,6 +40,8 @@ static afb_event_t gps_event;
 static afb_event_t getdestdir_event;
 static afb_event_t heading_event;
 static afb_event_t cancelguidance_event;
+static afb_event_t guidancestartpos_event;
+static afb_event_t getdistance_event;
 
 /**
  *  @brief navicore_getposition request callback
@@ -633,7 +635,7 @@ void OnRequestNavicoreSetDestDir(afb_req_t req)
 {
 	const char* state = afb_req_value(req, "state");
 
-	AFB_REQ_NOTICE(req, "state = %s", state);
+	// AFB_REQ_NOTICE(req, "state = %s", state);
 
 	afb_req_success(req, NULL, NULL);
 
@@ -641,12 +643,12 @@ void OnRequestNavicoreSetDestDir(afb_req_t req)
 
 	struct json_object* response_json = json_object_new_object();
 
-	AFB_REQ_NOTICE(req, "OnRequestNavicoreSetDestDir");
+	// AFB_REQ_NOTICE(req, "OnRequestNavicoreSetDestDir");
 
 	json_object_object_add(response_json, "state", json_object_new_string(state));
 
 	const char* response_json_str = json_object_to_json_string(response_json);
-	AFB_REQ_NOTICE(req, "response_json_str = %s", response_json_str);
+	// AFB_REQ_NOTICE(req, "response_json_str = %s", response_json_str);
 
 	afb_event_push(getdestdir_event, response_json);
 }
@@ -673,6 +675,72 @@ void OnRequestNavicoreGetCurrentDestDir(afb_req_t req)
 	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 /**
+ *  @brief navicore_setdistance request callback
+ *  @param[in] req Request from server
+ */
+void OnRequestNavicoreSetDistance(afb_req_t req)
+{
+	const char* totaldistance = afb_req_value(req, "TotalDistance");
+	const char* cumulativedistance = afb_req_value(req, "CumulativeDistance");
+
+	//Type Conversion
+	char* newtotaldistance =new char[100];
+	string totaldistance_string;
+	int totaldistance_int;
+	char* newcumulativedistance =new char[100];
+	string cumulativedistance_string;
+	int cumulativedistance_int;
+	strcpy(newtotaldistance,totaldistance);
+	totaldistance_string = newtotaldistance;
+	totaldistance_int = atoi(totaldistance_string.c_str());
+	strcpy(newcumulativedistance,cumulativedistance);
+	cumulativedistance_string = newcumulativedistance;
+	cumulativedistance_int = atoi(cumulativedistance_string.c_str());
+
+	// AFB_REQ_NOTICE(req, "totaldistance = %s cumulativedistance = %s", totaldistance,cumulativedistance);
+
+	afb_req_success(req, NULL, NULL);
+
+	navigationInfo->setNaviInfoCurrentTotalDistance(const_cast<char*>(totaldistance));
+	navigationInfo->setNaviInfoCurrentCumulativeDistance(const_cast<char*>(cumulativedistance));
+
+	struct json_object* response_json = json_object_new_object();
+
+	// AFB_REQ_NOTICE(req, "OnRequestNavicoreSetDistance");
+
+	json_object_object_add(response_json, "totaldistance", json_object_new_int(totaldistance_int));
+	json_object_object_add(response_json, "cumulativedistance", json_object_new_int(cumulativedistance_int));
+
+	const char* response_json_str = json_object_to_json_string(response_json);
+	// AFB_REQ_NOTICE(req, "response_json_str = %s", response_json_str);
+
+	afb_event_push(getdistance_event, response_json);
+}
+/**
+ *  @brief navicore_getcurrentdistance request callback
+ *  @param[in] req Request from server
+ */
+void OnRequestNavicoreGetCurrentDistance(afb_req_t req)
+{
+	struct json_object* response_json = json_object_new_array();
+    struct json_object* obj = json_object_new_object();
+
+	int current_totaldistance = navigationInfo->getNaviInfoCurrentTotalDistance();
+	int current_cumulativedistance = navigationInfo->getNaviInfoCurrentCumulativeDistance();
+
+	json_object_object_add(obj, "CurrentTotalDistance", json_object_new_int(current_totaldistance));
+	json_object_object_add(obj, "CurrentCumulativeDistance", json_object_new_int(current_cumulativedistance));
+
+	json_object_array_add(response_json, obj);
+	const char* obj_str = json_object_to_json_string(obj);
+	//AFB_API_NOTICE(req->api, "obj_str = %s", obj_str);
+
+	// Return success to BinderClient
+	afb_req_success(req, response_json, "navicore_getcurrentdistance");
+
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
+}
+/**
  *  @brief navicore_startguidance request callback
  *  @param[in] req Request from server
  */
@@ -680,6 +748,9 @@ void OnRequestNavicoreStartGuidance(afb_req_t req)
 {
 	AFB_REQ_NOTICE(req, "OnRequestNavicoreStartGuidance");
 	StartDemoCarlaclient(req->api);
+
+	const char* state = "ture";
+	navigationInfo->setNaviInfoCurrentGuidanceState(const_cast<char*>(state));
 
 	afb_req_success(req, NULL, NULL);
 }
@@ -692,10 +763,36 @@ void OnRequestNavicoreCancelGuidance(afb_req_t req)
 {
 	AFB_REQ_NOTICE(req, "OnRequestNavicoreCancelGuidance");
 	StopDemoCarlaclient(req->api);
+
+	const char* state = "false";
+	navigationInfo->setNaviInfoCurrentGuidanceState(const_cast<char*>(state));
 	
 	afb_event_push(cancelguidance_event, NULL);
 
 	afb_req_success(req, NULL, NULL);
+}
+
+/**
+ *  @brief navicore_getcurrentguidancestate request callback
+ *  @param[in] req Request from server
+ */
+void OnRequestNavicoreGetCurrentGuidanceState(afb_req_t req)
+{
+	struct json_object* response_json = json_object_new_array();
+    struct json_object* obj = json_object_new_object();
+
+	char* current_guidancestate  = navigationInfo->getNaviInfoCurrentGuidanceState();
+
+	json_object_object_add(obj, "CurrentGuidanceState", json_object_new_string(current_guidancestate));
+
+	json_object_array_add(response_json, obj);
+	const char* obj_str = json_object_to_json_string(obj);
+	//AFB_API_NOTICE(req->api, "obj_str = %s", obj_str);
+
+	// Return success to BinderClient
+	afb_req_success(req, response_json, "navicore_getcurrentguidancestate");
+
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 /**
@@ -716,6 +813,52 @@ void OnRequestNavicoreDemoState(afb_req_t req)
 	AFB_REQ_NOTICE(req, "Demo state = %d", demo);
 
 	afb_req_success(req, NULL, NULL);
+}
+
+/**
+ *  @brief navicore_settguidancestartpos request callback
+ *  @param[in] req Request from server
+ */
+void OnRequestNavicoreSetGuidanceStartPos(afb_req_t req)
+{
+	const char* guidance_latitude = afb_req_value(req, "StartLatitude");
+	const char* guidance_longitude = afb_req_value(req, "StartLongitude");
+
+	navigationInfo->setGuidanceStartLatitude(const_cast<char*>(guidance_latitude));
+	navigationInfo->setGuidanceStartLongitude(const_cast<char*>(guidance_longitude));
+
+	afb_req_success(req, NULL, NULL);
+	//AFB_API_NOTICE(req->api, "OnRequestNavicoreSetGuidanceStartPos");
+
+	struct json_object* response_json = json_object_new_array();
+	struct json_object* obj = json_object_new_object();
+	json_object_object_add(obj, "StartLatitude", json_object_new_string(guidance_latitude));
+	json_object_object_add(obj, "StartLongitude", json_object_new_string(guidance_longitude));
+	json_object_array_add(response_json, obj);
+	afb_event_push(guidancestartpos_event, response_json);
+}
+
+/**
+ *  @brief navicore_gettguidancestartpos request callback
+ *  @param[in] req Request from server
+ */
+void OnRequestNavicoreGetGuidanceStartPos(afb_req_t req)
+{
+	//AFB_API_NOTICE(req->api, "OnRequestNavicoreGetGuidanceStartPos");
+
+	struct json_object* response_json = json_object_new_array();
+    struct json_object* obj = json_object_new_object();
+	json_object_object_add(obj, "StartLatitude", json_object_new_string(navigationInfo->getGuidanceStartLatitude()));
+	json_object_object_add(obj, "StartLongitude", json_object_new_string(navigationInfo->getGuidanceStartLongitude()));
+	json_object_array_add(response_json, obj);
+
+	const char* obj_str = json_object_to_json_string(obj);
+	//AFB_API_NOTICE(req->api, "obj_str = %s", obj_str);
+
+	// Return success to BinderClient
+	afb_req_success(req, response_json, "navicore_getguidancestartpos");
+
+	//AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
 
 /**
@@ -774,6 +917,16 @@ void subscribe(afb_req_t req)
 	}
 	else if(value && !strcasecmp(value, "cancelguidance")){
 		afb_req_subscribe(req, cancelguidance_event);
+		afb_req_success(req, NULL, NULL);
+		return;
+	}
+	else if(value && !strcasecmp(value, "setguidancestartpos")){
+		afb_req_subscribe(req, guidancestartpos_event);
+		afb_req_success(req, NULL, NULL);
+		return;
+	}
+	else if(value && !strcasecmp(value, "getdistance")){
+		afb_req_subscribe(req, getdistance_event);
 		afb_req_success(req, NULL, NULL);
 		return;
 	}
@@ -839,6 +992,16 @@ void unsubscribe(afb_req_t req)
 		afb_req_success(req, NULL, NULL);
 		return;
 	}
+	else if(value && !strcasecmp(value, "setguidancestartpos")){
+		afb_req_unsubscribe(req, guidancestartpos_event);
+		afb_req_success(req, NULL, NULL);
+		return;
+	}
+	else if(value && !strcasecmp(value, "getdistance")){
+		afb_req_unsubscribe(req, getdistance_event);
+		afb_req_success(req, NULL, NULL);
+		return;
+	}
 	afb_req_fail(req, "failed", "Invalid event");
 }
 
@@ -855,6 +1018,11 @@ void OnRequestNavicoreGetRouteInfo(afb_req_t req)
 
 	uint32_t allroutes = navigationInfo->getNaviInfoAllRoutes();
 	json_object_object_add(obj, "AllRoutes", json_object_new_int(allroutes));
+
+	char* start_latitude  = navigationInfo->getGuidanceStartLatitude();
+	char* start_longitude = navigationInfo->getGuidanceStartLongitude();
+	json_object_object_add(obj, "StartLatitude", json_object_new_string(start_latitude));
+	json_object_object_add(obj, "StartLongitude", json_object_new_string(start_longitude));
 
 	char* current_latitude  = navigationInfo->getNaviInfoCurrentLatitude();
 	char* current_longitude = navigationInfo->getNaviInfoCurrentLongitude();
@@ -1033,6 +1201,8 @@ int init(afb_api_t api)
 	heading_event = afb_api_make_event(afbBindingV3root,"navicore_heading");
 	getdestdir_event = afb_api_make_event(afbBindingV3root,"navicore_getdestdir");
     cancelguidance_event = afb_api_make_event(afbBindingV3root,"navicore_cancelguidance");
+	guidancestartpos_event = afb_api_make_event(afbBindingV3root, "navicore_setguidancestartpos");
+	getdistance_event = afb_api_make_event(afbBindingV3root,"navicore_getdistance");
 
 	SubscribeGps(api);
 	SubscribeCarlaclient(api);
@@ -1067,7 +1237,12 @@ const afb_verb_t verbs[] =
 	 { verb : "navicore_getcurrentdestdir",	    callback : OnRequestNavicoreGetCurrentDestDir },
 	 { verb : "navicore_startguidance",         callback : OnRequestNavicoreStartGuidance	},
 	 { verb : "navicore_cancelguidance",        callback : OnRequestNavicoreCancelGuidance	},
+	 { verb : "navicore_getcurrentguidancestate",callback : OnRequestNavicoreGetCurrentGuidanceState },
 	 { verb : "navicore_demostate",             callback : OnRequestNavicoreDemoState	},
+	 { verb : "navicore_setguidancestartpos",   callback : OnRequestNavicoreSetGuidanceStartPos	 },
+	 { verb : "navicore_getguidancestartpos",   callback : OnRequestNavicoreGetGuidanceStartPos },
+	 { verb : "navicore_setdistance",           callback : OnRequestNavicoreSetDistance	},
+	 { verb : "navicore_getcurrentdistance",callback : OnRequestNavicoreGetCurrentDistance },
 	 { verb : "subscribe",		   				callback : subscribe 						},
 	 { verb : "unsubscribe",		   			callback : unsubscribe						},
 	 { verb : NULL }

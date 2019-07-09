@@ -65,6 +65,44 @@ char* NavigationInfo::getNaviInfoCurrentDirState()
 	return mCurrentState;
 }
 
+void NavigationInfo::setNaviInfoCurrentTotalDistance( char* totaldistance )
+{
+	strcpy(mCurrentTotalDistance,totaldistance);
+}
+
+int NavigationInfo::getNaviInfoCurrentTotalDistance()
+{
+	string totaldistance_string;
+	int totaldistance_int;
+	totaldistance_string = mCurrentTotalDistance;
+	totaldistance_int = atoi(totaldistance_string.c_str());
+	return totaldistance_int;
+}
+
+void NavigationInfo::setNaviInfoCurrentCumulativeDistance( char* cumulativedistance )
+{
+	strcpy(mCurrentCumulativeDistance,cumulativedistance);
+}
+
+int NavigationInfo::getNaviInfoCurrentCumulativeDistance()
+{
+	string cumulativedistance_string;
+	int cumulativedistance_int;
+	cumulativedistance_string = mCurrentCumulativeDistance;
+	cumulativedistance_int = atoi(cumulativedistance_string.c_str());
+	return cumulativedistance_int;
+}
+
+void NavigationInfo::setNaviInfoCurrentGuidanceState( char* state )
+{
+	strcpy(mGuidanceState,state);
+}
+
+char* NavigationInfo::getNaviInfoCurrentGuidanceState()
+{
+	return mGuidanceState;
+}
+
 void NavigationInfo::setNaviInfoAllRoutes( char* route )
 {
 	mRoutes = stoi(route);
@@ -133,4 +171,23 @@ void NavigationInfo::setNaviInfoDemoDirection( char* direction )
 char* NavigationInfo::getNaviInfoDemoDirection()
 {
 	return mDemoDirection;
+}
+
+void NavigationInfo::setGuidanceStartLatitude(char* latitude)
+{strcpy(mGuidanceStartLatitude,latitude);
+}
+
+char* NavigationInfo::getGuidanceStartLatitude()
+{
+	return mGuidanceStartLatitude;
+}
+
+void NavigationInfo::setGuidanceStartLongitude(char* longitude)
+{
+	strcpy(mGuidanceStarLongitude,longitude);
+}
+
+char* NavigationInfo::getGuidanceStartLongitude()
+{
+	return mGuidanceStarLongitude;
 }

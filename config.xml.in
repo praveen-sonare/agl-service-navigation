@@ -16,7 +16,7 @@
   </feature>
   <feature name="urn:AGL:widget:required-api">
      <param name="lib/libNaviAPIService.so" value="local" />
-     <param name="192.168.123.11:4002/gps" value="tcp" />
+     <param name="192.168.123.11:4001/gps" value="tcp" />
      <param name="192.168.123.11:4000/carlaclient" value="tcp" />
   </feature>
 </widget>

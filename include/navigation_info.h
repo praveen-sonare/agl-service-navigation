@@ -25,6 +25,13 @@ private:
 	/* GetDirState */
 	char mCurrentState[256];		//current direction state info
 
+	/* GetTotalDistance and GetCumulativeDistance */
+	char mCurrentTotalDistance[256];		//current total distance info
+	char mCurrentCumulativeDistance[256];		//current cumulative distance info
+
+	/* GetGuidanceState */
+	char mGuidanceState[256];		//current guidance state info
+
 	/*	getAllroutes	*/
 	uint32_t mRoutes;				//current route count
 
@@ -37,6 +44,10 @@ private:
 	char mDemoLongitude[256];		//current longitude info when in demo
 	char mDemoDistance[256];		//the distance from current position(along the route)
 	char mDemoDirection[256];		//current car direction
+
+	/*	guidance start position information	*/
+	char mGuidanceStartLatitude[256] = {0};		//guidance start latitude info
+	char mGuidanceStarLongitude[256] = {0};;	//guidance start longitude info
 
 public:
 	//get&set function for per members
@@ -58,6 +69,15 @@ public:
 	void setNaviInfoCurrentDirState( char* state );
 	char* getNaviInfoCurrentDirState();
 
+	void setNaviInfoCurrentTotalDistance( char* totaldistance );
+	int getNaviInfoCurrentTotalDistance();
+
+	void setNaviInfoCurrentCumulativeDistance( char* cumulativedistance );
+	int getNaviInfoCurrentCumulativeDistance();
+
+	void setNaviInfoCurrentGuidanceState( char* state );
+	char* getNaviInfoCurrentGuidanceState();
+
 	void setNaviInfoAllRoutes( char* route );
 	uint32_t getNaviInfoAllRoutes();
 
@@ -78,5 +98,10 @@ public:
 
 	void setNaviInfoDemoDirection( char* direction );
 	char* getNaviInfoDemoDirection();
+
+	void setGuidanceStartLatitude(char* latitude);
+	char* getGuidanceStartLatitude();
+	void setGuidanceStartLongitude(char* longitude);
+	char* getGuidanceStartLongitude();
 };
 
