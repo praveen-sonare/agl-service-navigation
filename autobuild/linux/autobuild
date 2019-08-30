@@ -16,7 +16,7 @@
 
 THISFILE  := $(lastword $(MAKEFILE_LIST))
 BUILD_DIR := $(abspath $(dir $(THISFILE))/../../build)
-DESTDIR   := ${BUILD_DIR}
+DEST      := ${BUILD_DIR}
 
 .PHONY: all clean distclean configure build package help update
 
@@ -33,8 +33,11 @@ help:
 	@echo "- package: output a widget file '*.wgt'"
 	@echo "- install: install in your ${CMAKE_INSTALL_DIR} directory"
 	@echo ""
-	@echo "Usage: ./autobuild/linux/autobuild package DESTDIR=${HOME}/opt"
-	@echo "Don't use your build dir as DESTDIR as wgt file is generated at this location"
+	@echo "Usage: ./autobuild/agl/autobuild package DEST=${HOME}/opt"
+	@echo "Don't use your build dir as DEST as wgt file is generated at this location"
+
+update: configure
+	@cmake --build ${BUILD_DIR} --target autobuild
 
 clean:
 	@([ -d ${BUILD_DIR} ] && make -C ${BUILD_DIR} ${CLEAN_ARGS} clean) || echo Nothing to clean
@@ -50,9 +53,26 @@ build: configure
 	@cmake --build ${BUILD_DIR} ${BUILD_ARGS} --target all
 
 package: build
+	@mkdir -p ${BUILD_DIR}/$@/bin
+	@mkdir -p ${BUILD_DIR}/$@/etc
+	@mkdir -p ${BUILD_DIR}/$@/lib
+	@mkdir -p ${BUILD_DIR}/$@/htdocs
+	@mkdir -p ${BUILD_DIR}/$@/var
 	@cmake --build ${BUILD_DIR} ${PACKAGE_ARGS} --target widget
-	@if [ "${DESTDIR}" != "${BUILD_DIR}" ]; then \
-		mkdir -p ${DESTDIR} && cp ${BUILD_DIR}/*.wgt ${DESTDIR}; \
+	@if [ "${DEST}" != "${BUILD_DIR}" ]; then \
+		mkdir -p ${DEST} && cp ${BUILD_DIR}/*.wgt ${DEST}; \
+	fi
+
+package-test: build
+	@mkdir -p ${BUILD_DIR}/$@/bin
+	@mkdir -p ${BUILD_DIR}/$@/etc
+	@mkdir -p ${BUILD_DIR}/$@/lib
+	@mkdir -p ${BUILD_DIR}/$@/htdocs
+	@mkdir -p ${BUILD_DIR}/$@/var
+	@cmake --build ${BUILD_DIR} ${PACKAGE_ARGS} --target widget
+	@cmake --build ${BUILD_DIR} ${PACKAGE_ARGS} --target test_widget
+	@if [ "${DEST}" != "${BUILD_DIR}" ]; then \
+		mkdir -p ${DEST} && cp ${BUILD_DIR}/*.wgt ${DEST}; \
 	fi
 
 install: build
