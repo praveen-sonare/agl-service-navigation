@@ -87,8 +87,6 @@ void OnRequestNavicoreGetPosition(afb_req_t req)
 		afb_req_fail(req, "failed", "navicore_getposition Bad Request");
 	}
 
-	// Json object release
-	json_object_put(response.json_data);
 
 	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
@@ -130,8 +128,6 @@ void OnRequestNavicoreGetAllRoutes(afb_req_t req)
 		afb_req_fail(req, "failed", "navicore_getallroutes Bad Request");
 	}
 
-	// json object release
-	json_object_put(response.json_data);
 
 	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
@@ -182,8 +178,6 @@ void OnRequestNavicoreCreateRoute(afb_req_t req)
 		afb_req_fail(req, "failed", "navicore_createroute Bad Request");
 	}
 
-	// json object release
-	json_object_put(response.json_data);
 
 	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }
@@ -454,8 +448,6 @@ void OnRequestNavicoreGetAllSessions(afb_req_t req)
 		afb_req_fail(req, "failed", "navicore_getallsessions Bad Request");
 	}
 
-	// json object release
-	json_object_put(response.json_data);
 
 	AFB_API_NOTICE(req->api, "<-- End %s()", __func__);
 }

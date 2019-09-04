@@ -88,7 +88,6 @@ std::map< int32_t, naviapi::variant > JsonResponseAnalyzer::AnalyzeResponseGetPo
 		}
 	}
 
-	json_object_put(json_obj);
 	return ret;
 }
 
@@ -146,7 +145,6 @@ std::vector< uint32_t > JsonResponseAnalyzer::AnalyzeResponseGetAllRoutes( std::
 		}
 	}
 
-	json_object_put(json_obj);
 	return routeList;
 }
 
@@ -182,7 +180,6 @@ uint32_t JsonResponseAnalyzer::AnalyzeResponseCreateRoute( std::string& res_json
 		}
 	}
 
-	json_object_put(json_obj);
 	return routeHandle;
 }
 
@@ -248,7 +245,6 @@ std::map<uint32_t, std::string> JsonResponseAnalyzer::AnalyzeResponseGetAllSessi
 		}
 	}
     
-	json_object_put(json_obj);
 	return session_map;
 }
 

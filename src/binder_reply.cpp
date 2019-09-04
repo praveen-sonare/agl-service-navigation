@@ -74,7 +74,6 @@ APIResponse BinderReply::ReplyNavicoreGetPosition( std::map<int32_t, double>& po
 
 		default:
 			fprintf(stderr, "Unknown key.");
-			json_object_put(obj);
 			break;
 		}
 	}
@@ -157,7 +156,6 @@ APIResponse BinderReply::ReplyNavicoreGetAllSessions( std::map<uint32_t, std::st
 		else
 		{
 			fprintf(stderr, "invalid key.");
-			json_object_put(obj);
 		}
 	}
 
