@@ -59,8 +59,8 @@ package: build
 	@mkdir -p ${BUILD_DIR}/$@/htdocs
 	@mkdir -p ${BUILD_DIR}/$@/var
 	@cmake --build ${BUILD_DIR} ${PACKAGE_ARGS} --target widget
-	@if [ "${DEST}" != "${BUILD_DIR}/$@" ]; then \
-		mkdir -p ${DEST} && cp ${BUILD_DIR}/$@/*.wgt ${DEST}; \
+	@if [ "${DEST}" != "${BUILD_DIR}" ]; then \
+		mkdir -p ${DEST} && cp ${BUILD_DIR}/*.wgt ${DEST}; \
 	fi
 
 package-test: build

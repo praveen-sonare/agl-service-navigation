@@ -1,25 +1,59 @@
-AGL Navigation API Binder
-===============
+# Navigation Service
 
-Copyright 2017 AISIN AW
+## Overview
 
-author: Yoshito Momiyama <i25461_momiyama@aisin-aw.co.jp>
+Navigation service keeps track of application data that allows other clients to share location, waypoints,
+and state between each other.
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+## Verbs
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+| Name                | Description                                 | JSON Response                      |
+|---------------------|---------------------------------------------|------------------------------------|
+| subscribe           | subscribe to an navigation service          | *Request:* {"value": "status"}     |
+| unsubscribe         | unsubscribe to an navigation service        | *Request:* {"value": "status"}     |
+| broadcast_status    | broadcast status event to other clients     | *Request:* {"state": "stop"}       |
+| broadcast_position  | broadcast position event to other clients   | See *position Verb* section        |
+| broadcast_waypoints | broadcast waypoints events to other clients | See *waypoints Verb* section       |
 
 
-===============
+### broadcast_position Verb
 
-This component is a reference implementation of the AGL Navigation API.
+Populate same data referenced in *position Event* section for the event
 
+### broadcast_waypoints Verb
 
+Populate same data referenced in *waypoints Event* section for the event
+
+## Events
+
+| Name           | Description                         |
+|----------------|-------------------------------------|
+| status         | status of the navigation engine     |
+| position       | current route or car position event |
+| waypoints      | waypoints for routing engine        |
+
+### position Event
+
+<pre>
+{
+  "points": [
+    {
+      "latitude": 36.12906,
+      "longitude": -115.17908
+    }
+  ]
+}
+</pre>
+
+### waypoints Event
+
+<pre>
+{
+  "points": [
+    {
+      "latitude": 36.12906,
+      "longitude": -115.17908
+    }
+  ]
+}
+</pre>
