@@ -38,8 +38,11 @@ Populate same data referenced in *waypoints Event* section for the event
 {
   "points": [
     {
+      "position": "car",
       "latitude": 36.12906,
       "longitude": -115.17908
+      "direction": 273.0,
+      "distance": 1530.45
     }
   ]
 }
