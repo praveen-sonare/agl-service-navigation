@@ -146,12 +146,22 @@ static void broadcast(afb_req_t request, const char *name, gboolean cache)
 		json_object_get(jresp);
 		*storage = jresp;
 
+		// increment reference for event
+		json_object_get(jresp);
+		afb_event_push(event, jresp);
+
 		g_rw_lock_writer_unlock(&ns->rw_lock);
+
+		return;
 	}
+
+	g_rw_lock_reader_lock(&ns->rw_lock);
 
 	// increment reference for event
 	json_object_get(jresp);
 	afb_event_push(event, jresp);
+
+	g_rw_lock_reader_unlock(&ns->rw_lock);
 }
 
 static void broadcast_status(afb_req_t request)
