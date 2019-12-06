@@ -135,9 +135,11 @@ static void broadcast(afb_req_t request, const char *name, gboolean cache)
 	json_object *jresp = afb_req_json(request);
 
 	if (cache) {
-		json_object **storage = get_storage_from_value(ns, name);
+		json_object **storage;
 
 		g_rw_lock_writer_lock(&ns->rw_lock);
+
+		storage = get_storage_from_value(ns, name);
 
 		if (*storage)
 			json_object_put(*storage);
