@@ -132,7 +132,11 @@ static void broadcast(afb_req_t request, const char *name, gboolean cache)
 {
 	struct navigation_state *ns = navigation_get_userdata(request);
 	afb_event_t event = get_event_from_value(ns, name);
-	json_object *jresp = afb_req_json(request);
+	json_object *jresp = afb_req_json(request), *tmp = NULL;
+
+
+	if (json_object_deep_copy(jresp, (json_object **) &tmp, NULL))
+		return;
 
 	if (cache) {
 		json_object **storage;
@@ -143,27 +147,22 @@ static void broadcast(afb_req_t request, const char *name, gboolean cache)
 
 		if (*storage)
 			json_object_put(*storage);
+		*storage = NULL;
 
 		// increment reference for storage
-		json_object_get(jresp);
-		*storage = jresp;
+		json_object_get(tmp);
+		*storage = tmp;
 
 		// increment reference for event
-		json_object_get(jresp);
-		afb_event_push(event, jresp);
+		json_object_get(tmp);
+		afb_event_push(event, tmp);
 
 		g_rw_lock_writer_unlock(&ns->rw_lock);
 
 		return;
 	}
 
-	g_rw_lock_reader_lock(&ns->rw_lock);
-
-	// increment reference for event
-	json_object_get(jresp);
-	afb_event_push(event, jresp);
-
-	g_rw_lock_reader_unlock(&ns->rw_lock);
+	afb_event_push(event, tmp);
 }
 
 static void broadcast_status(afb_req_t request)
