@@ -33,9 +33,17 @@
 
 #include "navigation-api.h"
 
-struct navigation_state *navigation_get_userdata(afb_req_t request) {
-	afb_api_t api = afb_req_get_api(request);
-	return afb_api_get_userdata(api);
+afb_api_t g_api;
+
+static const char *vshl_capabilities_events[] = {
+	"setDestination",
+	"cancelNavigation",
+	NULL,
+};
+
+struct navigation_state *navigation_get_userdata(void)
+{
+	return afb_api_get_userdata(g_api);
 }
 
 static afb_event_t get_event_from_value(struct navigation_state *ns,
@@ -71,7 +79,7 @@ static json_object **get_storage_from_value(struct navigation_state *ns,
 static void navigation_subscribe_unsubscribe(afb_req_t request,
 		gboolean unsub)
 {
-	struct navigation_state *ns = navigation_get_userdata(request);
+	struct navigation_state *ns = navigation_get_userdata();
 	json_object *jresp = json_object_new_object();
 	const char *value;
 	afb_event_t event;
@@ -128,12 +136,11 @@ static void unsubscribe(afb_req_t request)
 	navigation_subscribe_unsubscribe(request, TRUE);
 }
 
-static void broadcast(afb_req_t request, const char *name, gboolean cache)
+static void broadcast(json_object *jresp, const char *name, gboolean cache)
 {
-	struct navigation_state *ns = navigation_get_userdata(request);
+	struct navigation_state *ns = navigation_get_userdata();
 	afb_event_t event = get_event_from_value(ns, name);
-	json_object *jresp = afb_req_json(request), *tmp = NULL;
-
+	json_object *tmp = NULL;
 
 	if (json_object_deep_copy(jresp, (json_object **) &tmp, NULL))
 		return;
@@ -167,9 +174,14 @@ static void broadcast(afb_req_t request, const char *name, gboolean cache)
 
 static void broadcast_status(afb_req_t request)
 {
-	broadcast(request, "status", TRUE);
+	json_object *jresp = afb_req_json(request);
+	broadcast(jresp, "status", TRUE);
 
 	afb_req_success(request, NULL, "Broadcast status send");
+
+	// NOTE: If the Alexa SDK API for pushing local navigation
+	//       updates gets exposed, send update to vshl-capabilities
+	//       here.
 }
 
 static void broadcast_position(afb_req_t request)
@@ -181,26 +193,126 @@ static void broadcast_position(afb_req_t request)
 	if (position && !g_strcmp0(position, "car"))
 		cache = TRUE;
 
-	broadcast(request, "position", cache);
+	json_object *jresp = afb_req_json(request);
+	broadcast(jresp, "position", cache);
 
 	afb_req_success(request, NULL, "Broadcast position send");
+
+	// NOTE: If the Alexa SDK API for pushing local navigation
+	//       updates gets exposed, send update to vshl-capabilities
+	//       here.
 }
 
 static void broadcast_waypoints(afb_req_t request)
 {
-	broadcast(request, "waypoints", TRUE);
+	json_object *jresp = afb_req_json(request);
+	broadcast(jresp, "waypoints", TRUE);
 
 	afb_req_success(request, NULL, "Broadcast waypoints send");
+
+	// NOTE: If the Alexa SDK API for pushing local navigation
+	//       updates gets exposed, send update to vshl-capabilities
+	//       here.
+}
+
+static void handle_setDestination_event(struct json_object *object)
+{
+	json_object *jdest = NULL;
+	json_object_object_get_ex(object, "destination", &jdest);
+	if(!jdest) {
+		AFB_WARNING("setDestination event missing destination element");
+		return;
+	}
+
+	json_object *jcoord = NULL;
+	json_object_object_get_ex(jdest, "coordinate", &jcoord);
+	if(!jcoord) {
+		AFB_WARNING("setDestination event missing coordinate element");
+		return;
+	}
+
+	json_object *jlat = NULL;
+	json_object_object_get_ex(jcoord, "latitudeInDegrees", &jlat);
+	if(!jlat)
+		return;
+	errno = 0;
+	double lat = json_object_get_double(jlat);
+	if(errno != 0)
+		return;
+
+	json_object *jlon = NULL;
+	json_object_object_get_ex(jcoord, "longitudeInDegrees", &jlon);
+	if(!jlon)
+		return;
+	double lon = json_object_get_double(jlon);
+	if(errno != 0)
+		return;
+
+	json_object *jobj = json_object_new_object();
+	json_object *jpoints = json_object_new_array();
+	json_object *jpoint = json_object_new_object();
+	jlat = json_object_new_double(lat);
+	jlon = json_object_new_double(lon);
+	json_object_object_add(jpoint, "latitude", jlat);
+	json_object_object_add(jpoint, "longitude", jlon);
+	json_object_array_add(jpoints, jpoint);
+	json_object_object_add(jobj, "points", jpoints);
+	broadcast(jobj, "waypoints", TRUE);
+}
+
+static void handle_cancelNavigation_event(struct json_object *object)
+{
+	json_object *jobj = json_object_new_object();
+	json_object *jstate = json_object_new_string("stop");
+	json_object_object_add(jobj, "state", jstate);
+	broadcast(jobj, "status", TRUE);
+}
+
+static void onevent(afb_api_t api, const char *event, struct json_object *object)
+{
+	if(!event)
+		return;
+
+	if(strcmp(event, "vshl-capabilities/setDestination") == 0) {
+		handle_setDestination_event(object);
+	} else if(strcmp(event, "vshl-capabilities/cancelNavigation") == 0) {
+		handle_cancelNavigation_event(object);
+	} else {
+		AFB_WARNING("Unhandled vshl-capabilities event");
+	}
 }
 
 static int init(afb_api_t api)
 {
 	struct navigation_state *ns;
+	int rc;
 
 	ns = g_try_malloc0(sizeof(*ns));
 	if (!ns) {
 		AFB_ERROR("out of memory allocating navigation state");
 		return -ENOMEM;
+	}
+
+	rc = afb_daemon_require_api("vshl-capabilities", 1);
+	if (!rc) {
+		const char **tmp = vshl_capabilities_events;
+		json_object *args = json_object_new_object();
+		json_object *actions = json_object_new_array();
+
+		while (*tmp) {
+			json_object_array_add(actions, json_object_new_string(*tmp++));
+		}
+		json_object_object_add(args, "actions", actions);
+		if(json_object_array_length(actions)) {
+			rc = afb_api_call_sync(api, "vshl-capabilities", "navigation/subscribe",
+					       args, NULL, NULL, NULL);
+			if(rc != 0)
+				AFB_WARNING("afb_api_call_sync returned %d", rc);
+		} else {
+			json_object_put(args);
+		}
+	} else {
+		AFB_WARNING("unable to initialize vshl-capabilities binding");
 	}
 
 	ns->status_event = afb_daemon_make_event("status");
@@ -215,6 +327,7 @@ static int init(afb_api_t api)
 	}
 
 	afb_api_set_userdata(api, ns);
+	g_api = api;
 
 	g_rw_lock_init(&ns->rw_lock);
 
@@ -252,5 +365,6 @@ static const afb_verb_t binding_verbs[] = {
 const afb_binding_t afbBindingV3 = {
 	.api = "navigation",
 	.verbs = binding_verbs,
+	.onevent = onevent,
 	.init = init,
 };
