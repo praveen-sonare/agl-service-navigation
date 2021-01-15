@@ -80,7 +80,7 @@ static void navigation_subscribe_unsubscribe(afb_req_t request,
 		gboolean unsub)
 {
 	struct navigation_state *ns = navigation_get_userdata();
-	json_object *jresp = json_object_new_object();
+	json_object *jresp = NULL;
 	const char *value;
 	afb_event_t event;
 	int rc;
@@ -121,6 +121,7 @@ static void navigation_subscribe_unsubscribe(afb_req_t request,
 		return;
 	}
 
+	jresp = json_object_new_object();
 	afb_req_success_f(request, jresp, "Navigation %s to event \"%s\"",
 			!unsub ? "subscribed" : "unsubscribed",
 			value);
